@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet" />
+    <title>Portfolio</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Syne", sans-serif;
+        background: #0a0a0a;
+        color: #f0ede6;
+        overflow-x: hidden;
+      }
+      .mono {
+        font-family: "DM Mono", monospace;
+      }
+
+      /* Noise overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 999;
+        opacity: 0.4;
+      }
+
+      /* Nav */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 3rem;
+        border-bottom: 1px solid rgba(240, 237, 230, 0.08);
+        backdrop-filter: blur(12px);
+        background: rgba(10, 10, 10, 0.7);
+      }
+      .nav-logo {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2.5rem;
+      }
+      .nav-links a {
+        font-family: "DM Mono", monospace;
+        font-size: 0.75rem;
+        color: rgba(240, 237, 230, 0.5);
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: #f0ede6;
+      }
+
+      /* Hero */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 3rem;
+        padding-bottom: 5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 20% 60%,
+            rgba(255, 220, 120, 0.07) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 80% at 80% 20%,
+            rgba(100, 200, 255, 0.05) 0%,
+            transparent 60%
+          );
+      }
+      .hero-tag {
+        font-family: "DM Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(240, 237, 230, 0.4);
+        margin-bottom: 1.5rem;
+      }
+      .hero-tag span {
+        display: inline-block;
+        width: 24px;
+        height: 1px;
+        background: rgba(240, 237, 230, 0.3);
+        vertical-align: middle;
+        margin-right: 0.75rem;
+      }
+      .hero-name {
+        font-size: clamp(4rem, 12vw, 11rem);
+        font-weight: 800;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        margin-bottom: 2.5rem;
+      }
+      .hero-name .accent {
+        color: #f5c842;
+      }
+      .hero-desc {
+        max-width: 480px;
+        font-family: "DM Mono", monospace;
+        font-size: 0.85rem;
+        line-height: 1.7;
+        color: rgba(240, 237, 230, 0.5);
+        margin-bottom: 3rem;
+      }
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: #f5c842;
+        color: #0a0a0a;
+        padding: 0.9rem 2rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-decoration: none;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .hero-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(245, 200, 66, 0.3);
+      }
+      .hero-scroll {
+        position: absolute;
+        right: 3rem;
+        bottom: 3rem;
+        writing-mode: vertical-rl;
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        color: rgba(240, 237, 230, 0.25);
+        text-transform: uppercase;
+      }
+
+      /* Section common */
+      section {
+        padding: 7rem 3rem;
+      }
+      .section-label {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(240, 237, 230, 0.3);
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(240, 237, 230, 0.1);
+        max-width: 120px;
+      }
+
+      /* About */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5rem;
+        align-items: start;
+      }
+      .about-heading {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        margin-bottom: 2rem;
+      }
+      .about-heading em {
+        font-style: normal;
+        color: #f5c842;
+      }
+      .about-body {
+        font-family: "DM Mono", monospace;
+        font-size: 0.82rem;
+        line-height: 1.9;
+        color: rgba(240, 237, 230, 0.55);
+      }
+      .skills-list {
+        margin-top: 3rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .skill-tag {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.85rem;
+        border: 1px solid rgba(240, 237, 230, 0.15);
+        color: rgba(240, 237, 230, 0.5);
+        text-transform: uppercase;
+        transition: all 0.2s;
+      }
+      .skill-tag:hover {
+        border-color: #f5c842;
+        color: #f5c842;
+      }
+      .stat-block {
+        border-top: 1px solid rgba(240, 237, 230, 0.1);
+        padding-top: 2rem;
+        margin-top: 3rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat-num {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #f5c842;
+        line-height: 1;
+      }
+      .stat-label {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        color: rgba(240, 237, 230, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 0.4rem;
+      }
+
+      /* Work */
+      .work-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+        margin-top: 1rem;
+      }
+      .work-card {
+        position: relative;
+        padding: 2.5rem;
+        background: rgba(240, 237, 230, 0.03);
+        border: 1px solid rgba(240, 237, 230, 0.07);
+        overflow: hidden;
+        transition: background 0.3s;
+        cursor: pointer;
+      }
+      .work-card:hover {
+        background: rgba(240, 237, 230, 0.06);
+      }
+      .work-card:hover .work-arrow {
+        transform: translate(4px, -4px);
+      }
+      .work-num {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        color: rgba(240, 237, 230, 0.2);
+        margin-bottom: 2rem;
+      }
+      .work-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.75rem;
+      }
+      .work-desc {
+        font-family: "DM Mono", monospace;
+        font-size: 0.75rem;
+        line-height: 1.7;
+        color: rgba(240, 237, 230, 0.4);
+        margin-bottom: 2rem;
+      }
+      .work-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .work-tag {
+        font-family: "DM Mono", monospace;
+        font-size: 0.6rem;
+        color: #f5c842;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .work-arrow {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        width: 28px;
+        height: 28px;
+        border: 1px solid rgba(240, 237, 230, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: rgba(240, 237, 230, 0.4);
+        transition: transform 0.2s;
+      }
+      .work-card.featured {
+        grid-column: span 2;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 3rem;
+        align-items: center;
+      }
+      .work-featured-img {
+        height: 220px;
+        background: linear-gradient(
+          135deg,
+          rgba(245, 200, 66, 0.1) 0%,
+          rgba(100, 200, 255, 0.05) 100%
+        );
+        border: 1px solid rgba(240, 237, 230, 0.07);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: rgba(240, 237, 230, 0.1);
+      }
+
+      /* Contact */
+      .contact-inner {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .contact-heading {
+        font-size: clamp(2.5rem, 6vw, 5rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 1.5rem;
+      }
+      .contact-heading .accent {
+        color: #f5c842;
+        display: block;
+      }
+      .contact-sub {
+        font-family: "DM Mono", monospace;
+        font-size: 0.8rem;
+        color: rgba(240, 237, 230, 0.4);
+        margin-bottom: 3rem;
+        line-height: 1.7;
+      }
+      .contact-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .contact-link {
+        font-family: "DM Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(240, 237, 230, 0.5);
+        text-decoration: none;
+        padding: 0.75rem 1.5rem;
+        border: 1px solid rgba(240, 237, 230, 0.15);
+        transition: all 0.2s;
+      }
+      .contact-link:hover {
+        border-color: #f5c842;
+        color: #f5c842;
+      }
+      .contact-link.primary {
+        background: #f5c842;
+        color: #0a0a0a;
+        border-color: #f5c842;
+        font-weight: 700;
+      }
+      .contact-link.primary:hover {
+        background: #f0e050;
+        box-shadow: 0 8px 30px rgba(245, 200, 66, 0.25);
+      }
+
+      /* Footer */
+      footer {
+        padding: 2rem 3rem;
+        border-top: 1px solid rgba(240, 237, 230, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      footer span {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        color: rgba(240, 237, 230, 0.2);
+        letter-spacing: 0.1em;
+      }
+
+      /* Animations */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .hero-tag {
+        animation: fadeUp 0.6s ease both;
+      }
+      .hero-name {
+        animation: fadeUp 0.6s 0.1s ease both;
+      }
+      .hero-desc {
+        animation: fadeUp 0.6s 0.2s ease both;
+      }
+      .hero-cta {
+        animation: fadeUp 0.6s 0.3s ease both;
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          padding: 1rem 1.5rem;
+        }
+        .nav-links {
+          display: none;
+        }
+        section {
+          padding: 5rem 1.5rem;
+        }
+        .hero {
+          padding: 1.5rem;
+          padding-bottom: 4rem;
+        }
+        .hero-scroll {
+          display: none;
+        }
+        .about-grid {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+        }
+        .work-grid {
+          grid-template-columns: 1fr;
+        }
+        .work-card.featured {
+          grid-column: span 1;
+          grid-template-columns: 1fr;
+        }
+        .work-featured-img {
+          display: none;
+        }
+        footer {
+          flex-direction: column;
+          gap: 0.5rem;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <div class="nav-logo">UKL.</div>
+      <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div style="position: relative">
+        <div class="hero-tag"><span></span>Frontend Developer — Kathmandu</div>
+        <h1 class="hero-name">
+          Umang<br /><span class="accent">Keshar Lamichhane</span>
+        </h1>
+        <p class="hero-desc">
+          Building precise, performant interfaces with React, TypeScript &amp; a
+          sharp eye for detail. Currently crafting digital products that
+          actually work.
+        </p>
+        <a href="#" class="hero-cta">
+          View my work
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path
+              d="M2 7h10M7 2l5 5-5 5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round" />
+          </svg>
+        </a>
+      </div>
+      <div class="hero-scroll">Scroll to explore</div>
+    </section>
+
+    <!-- ABOUT -->
+    <section
+      style="
+        background: rgba(240, 237, 230, 0.02);
+        border-top: 1px solid rgba(240, 237, 230, 0.06);
+      ">
+      <div class="section-label">About</div>
+      <div class="about-grid">
+        <div>
+          <h2 class="about-heading">I turn <em>ideas</em> into interfaces.</h2>
+          <p class="about-body">
+            Frontend developer with a passion for component systems, clean
+            TypeScript, and UIs that feel inevitable. I obsess over the gap
+            between "functional" and "delightful."<br /><br />Currently deep in
+            React ecosystems, building design systems, and exploring the edges
+            of what the browser can do.
+          </p>
+          <div class="stat-block">
+            <div>
+              <div class="stat-num">2+</div>
+              <div class="stat-label">Years exp.</div>
+            </div>
+            <div>
+              <div class="stat-num">12</div>
+              <div class="stat-label">Projects</div>
+            </div>
+            <div>
+              <div class="stat-num">∞</div>
+              <div class="stat-label">Curiosity</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="about-body" style="margin-bottom: 1rem">
+            Tech I reach for first:
+          </p>
+          <div class="skills-list">
+            <span class="skill-tag">React</span>
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">Next.js</span>
+            <span class="skill-tag">Tailwind CSS</span>
+            <span class="skill-tag">ShadCN UI</span>
+            <span class="skill-tag">Prisma</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">MongoDB</span>
+            <span class="skill-tag">Clerk</span>
+            <span class="skill-tag">Vite</span>
+            <span class="skill-tag">Axios</span>
+            <span class="skill-tag">React Hook Form</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section id="work">
+      <div class="section-label">Selected Work</div>
+      <div class="work-grid">
+        <!-- Featured -->
+        <div class="work-card featured">
+          <div>
+            <div class="work-num">01 — Featured</div>
+            <h3 class="work-title">IPL Vision</h3>
+            <p class="work-desc">
+              A real-time IPL match prediction &amp; voting platform. Built with
+              Next.js, Clerk auth, MongoDB &amp; Prisma. Full brand theming with
+              official IPL colors.
+            </p>
+            <div class="work-tags">
+              <span class="work-tag">Next.js</span>
+              <span class="work-tag">Clerk</span>
+              <span class="work-tag">MongoDB</span>
+              <span class="work-tag">Prisma</span>
+              <span class="work-tag">ShadCN</span>
+            </div>
+          </div>
+          <div class="work-featured-img">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                stroke="rgba(245,200,66,0.4)"
+                stroke-width="2" />
+              <path
+                d="M20 32h24M32 20l12 12-12 12"
+                stroke="rgba(245,200,66,0.4)"
+                stroke-width="2"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="work-arrow">↗</div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="work-card">
+          <div class="work-num">02</div>
+          <h3 class="work-title">DoubleEncrypt</h3>
+          <p class="work-desc">
+            A secure two-layer encryption app built with React &amp; Vite,
+            deployed via Jenkins CI/CD to Apache.
+          </p>
+          <div class="work-tags">
+            <span class="work-tag">React</span>
+            <span class="work-tag">Vite</span>
+            <span class="work-tag">Jenkins</span>
+          </div>
+          <div class="work-arrow">↗</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="work-card">
+          <div class="work-num">03</div>
+          <h3 class="work-title">School Website</h3>
+          <p class="work-desc">
+            A grayscale ShadCN design system and school website built with
+            React, TypeScript &amp; Tailwind.
+          </p>
+          <div class="work-tags">
+            <span class="work-tag">React</span>
+            <span class="work-tag">ShadCN</span>
+            <span class="work-tag">Tailwind</span>
+          </div>
+          <div class="work-arrow">↗</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section style="border-top: 1px solid rgba(240, 237, 230, 0.06)">
+      <div class="contact-inner">
+        <div class="section-label" style="justify-content: center">Contact</div>
+        <h2 class="contact-heading">
+          Let's build<span class="accent">something.</span>
+        </h2>
+        <p class="contact-sub">
+          Open to freelance, collaborations, and full-time roles.<br />I reply
+          fast and I bring strong opinions (and good taste).
+        </p>
+        <div class="contact-links">
+          <a
+            href="mailto:lamichhaneumang123@gmail.com"
+            class="contact-link primary"
+            >Send a message</a
+          >
+          <a href="#" class="contact-link">GitHub</a>
+          <a href="#" class="contact-link">LinkedIn</a>
+          <a href="#" class="contact-link">Twitter / X</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <span>© 2026 Umang Keshar Lamichhane</span>
+      <span>Kathmandu, NP — Available for work</span>
+    </footer>
+  </body>
+</html>
