@@ -16,7 +16,7 @@ jobs:
 
       - name: "Build Docker Image"
         run: |
-          docker login
+          docker login -u odinsondocker -p $DOCKERHUB_PAT
           docker build -t odinsondocker/portfolio:v1 .
           docker push odinsondocker/portfolio:v1
         env:
